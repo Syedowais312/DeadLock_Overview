@@ -1,1 +1,9 @@
+# Ignore C++ compiled files
 *.exe
+*.out
+*.o
+*.obj
+
+# Ignore build folders
+build/
+bin/
