@@ -1,46 +1,32 @@
-#include<bits/stdc++.h>
-#include<thread>
-#include<mutex>
+#include <iostream>
+#include <thread>
+#include <mutex>
 
+std::mutex printerA;
+std::mutex printerB;
 
-using namespace std;
-mutex acc1_mutex,acc2_mutex;
-int acc1_balance=1000;
-int acc2_balance=1000;
+void printDocument1() {
+    std::lock_guard<std::mutex> lockA(printerA);
+    std::cout << "Doc1: Using Printer A\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-void transferAt0B()
-{
-    lock_guard<mutex> lock1(acc1_mutex);
-    this_thread::sleep_for(chrono::milliseconds(50));
-    lock_guard<mutex> lock2(acc2_mutex);
-
-      acc1_balance -= 100;
-    acc2_balance += 100;
-
-    cout<<"transfer A  --> B done \n";
+    std::lock_guard<std::mutex> lockB(printerB);
+    std::cout << "Doc1: Using Printer B\n";
 }
 
-void transferBtoA()
-{
-    lock_guard<mutex> lock2(acc2_mutex);
-    this_thread::sleep_for(chrono::milliseconds(50));
-    lock_guard<mutex> lock2(acc1_mutex);
+void printDocument2() {
+    std::lock_guard<std::mutex> lockB(printerB);
+    std::cout << "Doc2: Using Printer B\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-     acc1_balance -= 100;
-    acc2_balance += 100;
-
-    cout<<"Transfer B --> A done \n";
+    std::lock_guard<std::mutex> lockA(printerA);
+    std::cout << "Doc2: Using Printer A\n";
 }
 
-int main(){
-    thread t1(transferAt0B);
-    thread t2(transferBtoA);
+int main() {
+    std::thread t1(printDocument1);
+    std::thread t2(printDocument2);
 
     t1.join();
     t2.join();
-
-    cout<<"Final Balance of Account 1: "<<endl<<acc1_mutex<<endl;
-     cout<<"final Balance of Account 2: "<<endl<<acc2_mutex<<endl;
-
-     return 0;
 }
