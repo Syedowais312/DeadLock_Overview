@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include <chrono>
 
 using namespace std;
 
@@ -10,20 +9,16 @@ mutex printerB;
 
 void printDocument1() {
     lock_guard<mutex> lockA(printerA);
-    cout << "Doc1: Using Printer A\n";
-    this_thread::sleep_for(chrono::milliseconds(50));
-
     lock_guard<mutex> lockB(printerB);
-    cout << "Doc1: Using Printer B\n";
+
+    cout << "Doc1 printed using A and B\n";
 }
 
 void printDocument2() {
+    lock_guard<mutex> lockA(printerA);  // SAME ORDER
     lock_guard<mutex> lockB(printerB);
-    cout << "Doc2: Using Printer B\n";
-    this_thread::sleep_for(chrono::milliseconds(50));
 
-    lock_guard<mutex> lockA(printerA);
-    cout << "Doc2: Using Printer A\n";
+    cout << "Doc2 printed using A and B\n";
 }
 
 int main() {
